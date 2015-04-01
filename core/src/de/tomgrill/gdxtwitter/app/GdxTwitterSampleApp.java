@@ -1,5 +1,6 @@
 package de.tomgrill.gdxtwitter.app;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -20,6 +21,8 @@ public class GdxTwitterSampleApp extends ApplicationAdapter {
 	public void create() {
 		batch = new SpriteBatch();
 		img = new Texture("badlogic.jpg");
+		
+		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 
 		TwitterSystem twitterSystem = new TwitterSystem(new MyTwitterConfig());
 
@@ -38,7 +41,7 @@ public class GdxTwitterSampleApp extends ApplicationAdapter {
 
 			@Override
 			public void error(String errorMsg) {
-				System.out.println("LOGIN ERROR");
+				System.out.println("LOGIN ERROR" + errorMsg);
 
 			}
 
