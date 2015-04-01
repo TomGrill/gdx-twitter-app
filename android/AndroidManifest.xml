@@ -5,6 +5,8 @@
     android:versionName="1.0" >
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="21" />
+    
+     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -21,6 +23,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        
+        
+        <activity
+            android:name="de.tomgrill.gdxtwitter.android.AndroidTwitterAuthIntent"
+            android:launchMode="singleTask"
+        >
+              <!--TODO: Put your callback components into the data element below -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="gdx-twitter" android:host="twitter" />
+            </intent-filter>
+        </activity>
+        
+        
+        
+        
+        
     </application>
 
 </manifest>

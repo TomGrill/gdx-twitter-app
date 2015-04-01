@@ -6,18 +6,53 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import de.tomgrill.gdxtwitter.core.ResponseListener;
+import de.tomgrill.gdxtwitter.core.TwitterAPI;
+import de.tomgrill.gdxtwitter.core.TwitterSystem;
+
 public class GdxTwitterSampleApp extends ApplicationAdapter {
 	SpriteBatch batch;
 	Texture img;
-	
+
+	private TwitterAPI twitterAPI;
+
 	@Override
-	public void create () {
+	public void create() {
 		batch = new SpriteBatch();
 		img = new Texture("badlogic.jpg");
+
+		TwitterSystem twitterSystem = new TwitterSystem(new MyTwitterConfig());
+
+		twitterAPI = twitterSystem.getTwitterAPI();
+
+		twitterAPI.signin(true, new ResponseListener() {
+
+			@Override
+			public void success() {
+
+				System.out.println("LOGIN SUCCESS");
+				System.out.println(twitterAPI.getUserToken());
+				System.out.println(twitterAPI.getUserTokenSecret());
+
+			}
+
+			@Override
+			public void error(String errorMsg) {
+				System.out.println("LOGIN ERROR");
+
+			}
+
+			@Override
+			public void cancel() {
+				System.out.println("LOGIN CANCEL");
+
+			}
+		});
+
 	}
 
 	@Override
-	public void render () {
+	public void render() {
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
