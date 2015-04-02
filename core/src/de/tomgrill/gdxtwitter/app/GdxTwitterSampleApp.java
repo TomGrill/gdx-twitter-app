@@ -3,8 +3,6 @@ package de.tomgrill.gdxtwitter.app;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Net.HttpResponse;
-import com.badlogic.gdx.Net.HttpResponseListener;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -13,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.badlogic.gdx.net.HttpStatus;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -26,10 +25,10 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 import de.tomgrill.gdxtwitter.app.actors.BitmapFontActor;
 import de.tomgrill.gdxtwitter.app.actors.ButtonActor;
-import de.tomgrill.gdxtwitter.core.ResponseListener;
 import de.tomgrill.gdxtwitter.core.TwitterAPI;
 import de.tomgrill.gdxtwitter.core.TwitterRequest;
 import de.tomgrill.gdxtwitter.core.TwitterRequestType;
+import de.tomgrill.gdxtwitter.core.TwitterResponseListener;
 import de.tomgrill.gdxtwitter.core.TwitterSystem;
 
 public class GdxTwitterSampleApp extends ApplicationAdapter {
@@ -46,7 +45,7 @@ public class GdxTwitterSampleApp extends ApplicationAdapter {
 	private BitmapFontActor autoLogin;
 
 	private BitmapFontActor textBelow;
-	private String textToTweet = "Awesome, i use https://github.com/TomGrill/gdx-twitter.";
+	private String textToTweet = "Awesome, I use https://github.com/TomGrill/gdx-twitter.";
 	private String textToTweet2 = "Thanks @TomGrillGames";
 
 	private String twitterNickname;
@@ -67,27 +66,29 @@ public class GdxTwitterSampleApp extends ApplicationAdapter {
 		TwitterRequest tweetTextRequest = new TwitterRequest(TwitterRequestType.POST, "https://api.twitter.com/1.1/statuses/update.json");
 		tweetTextRequest.put("status", textToTweet + " " + textToTweet2);
 
-		twitterAPI.newAPIRequest(tweetTextRequest, new HttpResponseListener() {
-
-			@Override
-			public void handleHttpResponse(HttpResponse httpResponse) {
-				if (httpResponse.getStatus().getStatusCode() == 200) {
-					System.out.println("fine");
-				} else {
-					System.out.println("err " + httpResponse.getResultAsString());
-				}
-
-			}
-
-			@Override
-			public void failed(Throwable t) {
-				System.out.println("err");
-
-			}
+		twitterAPI.newAPIRequest(tweetTextRequest, new TwitterResponseListener() {
 
 			@Override
 			public void cancelled() {
-				System.out.println("ca");
+				System.out.println("cancelled");
+
+			}
+
+			@Override
+			public void success(String data) {
+				System.out.println("success: " + data);
+
+			}
+
+			@Override
+			public void apiError(HttpStatus response, String data) {
+				System.out.println("apiError " + data);
+
+			}
+
+			@Override
+			public void httpError(Throwable t) {
+				System.out.println("httpError" + t.getMessage());
 
 			}
 		});
@@ -247,22 +248,30 @@ public class GdxTwitterSampleApp extends ApplicationAdapter {
 
 	private void autoSignin() {
 		if (prefs.getBoolean("autosignin", false) && twitterAPI.isLoaded() && !twitterAPI.isSignedin()) {
-			twitterAPI.signin(false, new ResponseListener() {
+			twitterAPI.signin(false, new TwitterResponseListener() {
 
 				@Override
-				public void success() {
+				public void success(String data) {
 					Gdx.app.debug(TAG, "Autosignin successfull");
-				}
-
-				@Override
-				public void error(String errorMsg) {
-					Gdx.app.debug(TAG, "Autosignin with error: " + errorMsg);
 
 				}
 
 				@Override
-				public void cancel() {
+				public void apiError(HttpStatus response, String data) {
+					Gdx.app.debug(TAG, "Autosignin with API error: " + data);
+
+				}
+
+				@Override
+				public void httpError(Throwable t) {
+					Gdx.app.debug(TAG, "Autosignin with http error: " + t.getMessage());
+
+				}
+
+				@Override
+				public void cancelled() {
 					Gdx.app.debug(TAG, "Autosignin canceled");
+
 				}
 			});
 		}
@@ -282,22 +291,30 @@ public class GdxTwitterSampleApp extends ApplicationAdapter {
 	private void handleGUITwitterSignin() {
 		System.out.println("click login");
 
-		twitterAPI.signin(true, new ResponseListener() {
+		twitterAPI.signin(true, new TwitterResponseListener() {
 
 			@Override
-			public void success() {
+			public void success(String data) {
 				Gdx.app.debug(TAG, "GUI Signin successfull");
-			}
-
-			@Override
-			public void error(String errorMsg) {
-				Gdx.app.debug(TAG, "GUI Signin with error: " + errorMsg);
 
 			}
 
 			@Override
-			public void cancel() {
+			public void apiError(HttpStatus response, String data) {
+				Gdx.app.debug(TAG, "GUI Signin with error: " + data);
+
+			}
+
+			@Override
+			public void httpError(Throwable t) {
+				Gdx.app.debug(TAG, "GUI Signin httpError" + t.getMessage());
+
+			}
+
+			@Override
+			public void cancelled() {
 				Gdx.app.debug(TAG, "GUI Signin canceled");
+
 			}
 		});
 	}
@@ -324,41 +341,40 @@ public class GdxTwitterSampleApp extends ApplicationAdapter {
 
 					TwitterRequest request = new TwitterRequest(TwitterRequestType.GET, "https://api.twitter.com/1.1/account/verify_credentials.json");
 
-					twitterAPI.newAPIRequest(request, new HttpResponseListener() {
-
-						@Override
-						public void handleHttpResponse(HttpResponse httpResponse) {
-							if (httpResponse.getStatus().getStatusCode() == 200) {
-
-								String result = httpResponse.getResultAsString();
-
-								Gdx.app.log(TAG, "Request successfull: Responsebody: " + result);
-
-								JsonValue root = new JsonReader().parse(result);
-
-								twitterID = root.getString("id");
-								twitterNickname = root.getString("name");
-
-								Gdx.app.log(TAG, "Name: " + twitterNickname);
-								Gdx.app.log(TAG, "ID: " + twitterID);
-
-							} else {
-								Gdx.app.log(TAG, "Request with error: \n" + httpResponse.getResultAsString());
-								handleLogout(true);
-							}
-
-						}
-
-						@Override
-						public void failed(Throwable t) {
-							Gdx.app.log(TAG, "Request failed. Reason: " + t.getMessage());
-
-						}
+					twitterAPI.newAPIRequest(request, new TwitterResponseListener() {
 
 						@Override
 						public void cancelled() {
-							Gdx.app.log(TAG, "Request cancelled. Reason unknown.");
+							Gdx.app.log(TAG, "Request cancelled.");
 
+						}
+
+						@Override
+						public void success(String data) {
+							String result = data;
+
+							Gdx.app.log(TAG, "Request successfull: Responsebody: " + result);
+
+							JsonValue root = new JsonReader().parse(result);
+
+							twitterID = root.getString("id");
+							twitterNickname = root.getString("name");
+
+							Gdx.app.log(TAG, "Name: " + twitterNickname);
+							Gdx.app.log(TAG, "ID: " + twitterID);
+
+						}
+
+						@Override
+						public void apiError(HttpStatus response, String data) {
+							Gdx.app.log(TAG, "Request with error: \n" + data);
+							handleLogout(true);
+
+						}
+
+						@Override
+						public void httpError(Throwable t) {
+							Gdx.app.log(TAG, "Request failed. httpError: " + t.getMessage());
 						}
 					});
 
