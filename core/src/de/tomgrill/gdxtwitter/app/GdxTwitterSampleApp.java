@@ -241,8 +241,6 @@ public class GdxTwitterSampleApp extends ApplicationAdapter {
 
 		autoSignin();
 
-		System.out.println("stored token: " + twitterAPI.getToken());
-		System.out.println("stored token secret: " + twitterAPI.getTokenSecret());
 
 	}
 
@@ -252,7 +250,7 @@ public class GdxTwitterSampleApp extends ApplicationAdapter {
 
 				@Override
 				public void success(String data) {
-					Gdx.app.debug(TAG, "Autosignin successfull");
+					Gdx.app.debug(TAG, "Autosignin successfull" + data);
 
 				}
 
@@ -295,7 +293,7 @@ public class GdxTwitterSampleApp extends ApplicationAdapter {
 
 			@Override
 			public void success(String data) {
-				Gdx.app.debug(TAG, "GUI Signin successfull");
+				Gdx.app.debug(TAG, "GUI Signin successfull" +data );
 
 			}
 
