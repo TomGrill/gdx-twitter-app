@@ -21,7 +21,7 @@ public class GdxTwitterSampleApp extends ApplicationAdapter {
 	public void create() {
 		batch = new SpriteBatch();
 		img = new Texture("badlogic.jpg");
-		
+
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 
 		TwitterSystem twitterSystem = new TwitterSystem(new MyTwitterConfig());
@@ -34,8 +34,8 @@ public class GdxTwitterSampleApp extends ApplicationAdapter {
 			public void success() {
 
 				System.out.println("LOGIN SUCCESS");
-				System.out.println(twitterAPI.getUserToken());
-				System.out.println(twitterAPI.getUserTokenSecret());
+				System.out.println(twitterAPI.getToken());
+				System.out.println(twitterAPI.getTokenSecret());
 
 			}
 
