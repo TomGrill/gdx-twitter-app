@@ -69,9 +69,7 @@ project(":android") {
         
         compile "de.tomgrill.gdxtwitter:gdx-twitter-android:$gdxTwitterVersion"
         
-        compile "commons-codec:commons-codec:1.10"
-        compile "oauth.signpost:signpost-commonshttp4:1.2.1.2"
-        compile "oauth.signpost:signpost-core:1.2.1.2"
+        
 
         
     }

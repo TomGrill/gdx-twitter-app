@@ -111,9 +111,6 @@ public class GdxTwitterSampleApp extends ApplicationAdapter {
 		stage = new Stage(new ExtendViewport(640, 800, 640, 800));
 		Gdx.input.setInputProcessor(stage);
 
-		TwitterSystem facebookSystem = new TwitterSystem(myConfig);
-		twitterAPI = facebookSystem.getTwitterAPI();
-
 		tweetButton = new ButtonActor(new TextureRegion(new Texture("tweet-button.png")));
 		tweetButton.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -241,7 +238,6 @@ public class GdxTwitterSampleApp extends ApplicationAdapter {
 
 		autoSignin();
 
-
 	}
 
 	private void autoSignin() {
@@ -287,13 +283,12 @@ public class GdxTwitterSampleApp extends ApplicationAdapter {
 	}
 
 	private void handleGUITwitterSignin() {
-		System.out.println("click login");
 
 		twitterAPI.signin(true, new TwitterResponseListener() {
 
 			@Override
 			public void success(String data) {
-				Gdx.app.debug(TAG, "GUI Signin successfull" +data );
+				Gdx.app.debug(TAG, "GUI Signin successfull" + data);
 
 			}
 
@@ -356,9 +351,9 @@ public class GdxTwitterSampleApp extends ApplicationAdapter {
 							JsonValue root = new JsonReader().parse(result);
 
 							twitterID = root.getString("id");
-							twitterNickname = root.getString("name");
+							twitterNickname = root.getString("screen_name");
 
-							Gdx.app.log(TAG, "Name: " + twitterNickname);
+							Gdx.app.log(TAG, "Screen name: " + twitterNickname);
 							Gdx.app.log(TAG, "ID: " + twitterID);
 
 						}
