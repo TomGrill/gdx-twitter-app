@@ -1,9 +1,6 @@
 # gdx-twitter-app
 Example libGDX application implementing the gdx-twitter extension.
 
-## Quick example
-Google play: https://play.google.com/store/apps/details?id=de.tomgrill.gdxtwitter.app.android
-
 ## Setting up your Twitter App
 Go to https://apps.twitter.com/ and create a new app. 
 
