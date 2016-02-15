@@ -4,6 +4,8 @@ Example libGDX application implementing the gdx-twitter extension.
 ## Setting up your Twitter App
 Go to https://apps.twitter.com/ and create a new app. 
 
+Make sure to uncheck "Enable Callback Locking (It is recommended to enable callback locking to ensure apps cannot overwrite the callback url)" option in your app settings.
+
 ##Get it running
 
 **General**
